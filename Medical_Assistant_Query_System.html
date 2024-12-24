@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Assistant Query System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Medical Assistant Query System</h1>
+        <form id="queryForm">
+            <label for="query">Enter your query:</label>
+            <input type="text" id="query" name="query" placeholder="Type your question here..." required>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="responseContainer">
+            <h2>Response:</h2>
+            <p id="responseText">Awaiting your query...</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('queryForm');
+        const responseText = document.getElementById('responseText');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const query = document.getElementById('query').value;
+
+            if (query.trim() === "") {
+                responseText.textContent = "Please enter a valid query.";
+                return;
+            }
+
+            responseText.textContent = "Processing your query...";
+            try {
+                const response = await fetch('/process_query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query }),
+                });
+                const data = await response.json();
+                responseText.textContent = data.answer || "No response received.";
+            } catch (error) {
+                responseText.textContent = "Error processing your query. Please try again.";
+                console.error("Error:", error);
+            }
+        });
+    </script>
+</body>
+</html>
